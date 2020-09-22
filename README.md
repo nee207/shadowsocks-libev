@@ -1,5 +1,7 @@
 # shadowsocks-libev
 
+[![Build Status](https://travis-ci.com/shadowsocks/shadowsocks-libev.svg?branch=master)](https://travis-ci.com/shadowsocks/shadowsocks-libev) [![Snap Status](https://build.snapcraft.io/badge/shadowsocks/shadowsocks-libev.svg)](https://build.snapcraft.io/user/shadowsocks/shadowsocks-libev)
+
 ## Intro
 
 [Shadowsocks-libev](https://shadowsocks.org) is a lightweight secured SOCKS5
@@ -9,9 +11,7 @@ It is a port of [Shadowsocks](https://github.com/shadowsocks/shadowsocks)
 created by [@clowwindy](https://github.com/clowwindy), and maintained by
 [@madeye](https://github.com/madeye) and [@linusyang](https://github.com/linusyang).
 
-Current version: 3.2.0 | [Changelog](debian/changelog)
-
-Travis CI: [![Travis CI](https://travis-ci.org/shadowsocks/shadowsocks-libev.svg?branch=master)](https://travis-ci.org/shadowsocks/shadowsocks-libev)
+Current version: 3.3.5 | [Changelog](debian/changelog)
 
 ## Features
 
@@ -21,38 +21,47 @@ to be a lightweight implementation of shadowsocks protocol, in order to keep the
 For a full list of feature comparison between different versions of shadowsocks,
 refer to the [Wiki page](https://github.com/shadowsocks/shadowsocks/wiki/Feature-Comparison-across-Different-Versions).
 
-## Prerequisites
+## Quick Start
 
-### Get the latest source code
+Snap is the recommended way to install the latest binaries.
 
-To get the latest source code, you should also update the submodules as following:
+### Install snap core
+
+https://snapcraft.io/core
+
+### Install from snapcraft.io
+
+Stable channel:
 
 ```bash
-git clone https://github.com/shadowsocks/shadowsocks-libev.git
-cd shadowsocks-libev
-git submodule update --init --recursive
+sudo snap install shadowsocks-libev
 ```
 
-### Build and install with recent libsodium
+Edge channel:
 
-You have to install libsodium at least 1.0.8, but recommended 1.0.12 or later version before building. See [Directly build and install on UNIX-like system](#linux).
+```bash
+sudo snap install shadowsocks-libev --edge
+```
 
 ## Installation
 
 ### Distribution-specific guide
 
 - [Debian & Ubuntu](#debian--ubuntu)
-    + [Install from repository](#install-from-repository)
+    + [Install from repository](#install-from-repository-not-recommended)
     + [Build deb package from source](#build-deb-package-from-source)
     + [Configure and start the service](#configure-and-start-the-service)
 - [Fedora & RHEL](#fedora--rhel)
     + [Build from source with centos](#build-from-source-with-centos)
-    + [Install from repository](#install-from-repository-1)
-- [Archlinux](#archlinux)
+- [Archlinux & Manjaro](#archlinux--manjaro)
 - [NixOS](#nixos)
 - [Nix](#nix)
 - [Directly build and install on UNIX-like system](#linux)
 - [FreeBSD](#freebsd)
+    + [Install](#install)
+    + [Configuration](#configuration)
+    + [Run](#run)
+    + [Run as client](#run-as-client)
 - [OpenWRT](#openwrt)
 - [OS X](#os-x)
 - [Windows (MinGW)](#windows-mingw)
@@ -67,45 +76,15 @@ try `configure --help`.
 
 ### Debian & Ubuntu
 
-#### Install from repository
+#### Install from repository (not recommended)
 
 Shadowsocks-libev is available in the official repository for following distributions:
 
-* Debian 8 or higher, including oldstable (jessie), stable (stretch), testing (buster) and unstable (sid)
+* Debian 8 or higher, including oldoldstable (jessie), old stable (stretch), stable (buster), testing (bullseye) and unstable (sid)
 * Ubuntu 16.10 or higher
 
 ```bash
 sudo apt update
-sudo apt install shadowsocks-libev
-```
-
-For **Debian 8 (Jessie)** users, please install it from `jessie-backports-sloppy`:
-We strongly encourage you to install shadowsocks-libev from `jessie-backports-sloppy`.
-For more info about backports, you can refer [Debian Backports](https://backports.debian.org).
-
-```bash
-sudo sh -c 'printf "deb http://deb.debian.org/debian jessie-backports main\n" > /etc/apt/sources.list.d/jessie-backports.list'
-sudo sh -c 'printf "deb http://deb.debian.org/debian jessie-backports-sloppy main" >> /etc/apt/sources.list.d/jessie-backports.list'
-sudo apt update
-sudo apt -t jessie-backports-sloppy install shadowsocks-libev
-```
-
-For **Debian 9 (Stretch)** users, please install it from `stretch-backports`:
-We strongly encourage you to install shadowsocks-libev from `stretch-backports`.
-For more info about backports, you can refer [Debian Backports](https://backports.debian.org).
-
-```bash
-sudo sh -c 'printf "deb http://deb.debian.org/debian stretch-backports main" > /etc/apt/sources.list.d/stretch-backports.list'
-sudo apt update
-sudo apt -t stretch-backports install shadowsocks-libev
-```
-
-For **Ubuntu 14.04 and 16.04** users, please install from PPA:
-
-```bash
-sudo apt-get install software-properties-common -y
-sudo add-apt-repository ppa:max-c-lv/shadowsocks-libev -y
-sudo apt-get update
 sudo apt install shadowsocks-libev
 ```
 
@@ -184,39 +163,14 @@ Supported distributions:
 
 #### Build from source with centos
 
-If you are using CentOS 7, you need to install these prequirement to build from source code:
+If you are using CentOS 7, you need to install these prerequirements to build from source code:
 
 ```bash
 yum install epel-release -y
 yum install gcc gettext autoconf libtool automake make pcre-devel asciidoc xmlto c-ares-devel libev-devel libsodium-devel mbedtls-devel -y
 ```
 
-#### Install from repository
-
-Enable repo via `dnf`:
-
-```
-su -c 'dnf copr enable librehat/shadowsocks'
-```
-
-Or download yum repo on [Fedora Copr](https://copr.fedoraproject.org/coprs/librehat/shadowsocks/) and put it inside `/etc/yum.repos.d/`. The release `Epel` is for RHEL and its derivatives.
-
-Then, install `shadowsocks-libev` via `dnf`:
-
-```bash
-su -c 'dnf update'
-su -c 'dnf install shadowsocks-libev'
-```
-
-or `yum`:
-
-```bash
-su -c 'yum update'
-su -c 'yum install shadowsocks-libev'
-```
-The repository is maintained by [@librehat](https://github.com/librehat), any issues, please report [here](https://github.com/librehat/shadowsocks-libev/issues)
-
-### Archlinux
+### Archlinux & Manjaro
 
 ```bash
 sudo pacman -S shadowsocks-libev
@@ -269,8 +223,8 @@ sudo yum install gettext gcc autoconf libtool automake make asciidoc xmlto c-are
 ## Arch
 sudo pacman -S gettext gcc autoconf libtool automake make asciidoc xmlto c-ares libev
 
-# Installation of Libsodium
-export LIBSODIUM_VER=1.0.13
+# Installation of libsodium
+export LIBSODIUM_VER=1.0.16
 wget https://download.libsodium.org/libsodium/releases/libsodium-$LIBSODIUM_VER.tar.gz
 tar xvf libsodium-$LIBSODIUM_VER.tar.gz
 pushd libsodium-$LIBSODIUM_VER
@@ -284,7 +238,7 @@ export MBEDTLS_VER=2.6.0
 wget https://tls.mbed.org/download/mbedtls-$MBEDTLS_VER-gpl.tgz
 tar xvf mbedtls-$MBEDTLS_VER-gpl.tgz
 pushd mbedtls-$MBEDTLS_VER
-make SHARED=1 CFLAGS=-fPIC
+make SHARED=1 CFLAGS="-O2 -fPIC"
 sudo make DESTDIR=/usr install
 popd
 sudo ldconfig
@@ -297,26 +251,48 @@ sudo make install
 You may need to manually install missing softwares.
 
 ### FreeBSD
+#### Install
+Shadowsocks-libev is available in FreeBSD Ports Collection. You can install it in either way, `pkg` or `ports`.
+
+**pkg (recommended)**
 
 ```bash
-su
+pkg install shadowsocks-libev
+```
+
+**ports**
+
+```bash
 cd /usr/ports/net/shadowsocks-libev
 make install
 ```
 
-Edit your config.json file. By default, it's located in /usr/local/etc/shadowsocks-libev.
+#### Configuration
+Edit your `config.json` file. By default, it's located in `/usr/local/etc/shadowsocks-libev`.
 
-To enable shadowsocks-libev, add the following rc variable to your /etc/rc.conf file:
+To enable shadowsocks-libev, add the following rc variable to your `/etc/rc.conf` file:
 
 ```
 shadowsocks_libev_enable="YES"
 ```
+
+#### Run
 
 Start the Shadowsocks server:
 
 ```bash
 service shadowsocks_libev start
 ```
+
+#### Run as client
+By default, shadowsocks-libev is running as a server in FreeBSD. If you would like to start shadowsocks-libev in client mode, you can modify the rc script (`/usr/local/etc/rc.d/shadowsocks_libev`) manually.
+
+```
+# modify the following line from "ss-server" to "ss-local"
+command="/usr/local/bin/ss-local"
+```
+
+Note that is simply a workaround, each time you upgrade the port your changes will be overwritten by the new version.
 
 ### OpenWRT
 
@@ -383,7 +359,7 @@ you may refer to the man pages of the applications, respectively.
 
        -k <password>              Password of your remote server.
 
-       -m <encrypt_method>        Encrypt method: rc4-md5, 
+       -m <encrypt_method>        Encrypt method: rc4-md5,
                                   aes-128-gcm, aes-192-gcm, aes-256-gcm,
                                   aes-128-cfb, aes-192-cfb, aes-256-cfb,
                                   aes-128-ctr, aes-192-ctr, aes-256-ctr,
@@ -395,19 +371,26 @@ you may refer to the man pages of the applications, respectively.
                                   The default cipher is chacha20-ietf-poly1305.
 
        [-a <user>]                Run as another user.
-       
+
        [-f <pid_file>]            The file path to store pid.
 
        [-t <timeout>]             Socket timeout in seconds.
 
        [-c <config_file>]         The path to config file.
-       
+
        [-n <number>]              Max number of open files.
 
        [-i <interface>]           Network interface to bind.
                                   (not available in redir mode)
 
        [-b <local_address>]       Local address to bind.
+                                  For servers: Specify the local address to use 
+                                  while this server is making outbound 
+                                  connections to remote servers on behalf of the
+                                  clients.
+                                  For clients: Specify the local address to use 
+                                  while this client is making outbound 
+                                  connections to the server.
 
        [-u]                       Enable UDP relay.
                                   (TPROXY is required in redir mode)
@@ -415,47 +398,53 @@ you may refer to the man pages of the applications, respectively.
        [-U]                       Enable UDP relay and disable TCP relay.
                                   (not available in local mode)
 
+       [-T]                       Use tproxy instead of redirect. (for tcp)
+                                  (only available in redir mode)
+
        [-L <addr>:<port>]         Destination server address and port
                                   for local port forwarding.
                                   (only available in tunnel mode)
 
-       [-6]                       Resovle hostname to IPv6 address first.
+       [-6]                       Resolve hostname to IPv6 address first.
 
        [-d <addr>]                Name servers for internal DNS resolver.
                                   (only available in server mode)
-       
+
        [--reuse-port]             Enable port reuse.
-       
+
        [--fast-open]              Enable TCP fast open.
                                   with Linux kernel > 3.7.0.
                                   (only available in local and server mode)
-  
+
        [--acl <acl_file>]         Path to ACL (Access Control List).
                                   (only available in local and server mode)
-       
+
        [--manager-address <addr>] UNIX domain socket address.
                                   (only available in server and manager mode)
 
        [--mtu <MTU>]              MTU of your network interface.
-       
+
        [--mptcp]                  Enable Multipath TCP on MPTCP Kernel.
-       
+
        [--no-delay]               Enable TCP_NODELAY.
 
        [--executable <path>]      Path to the executable of ss-server.
                                   (only available in manager mode)
-       
+
+       [-D <path>]                Path to the working directory of ss-manager.
+                                  (only available in manager mode)
+
        [--key <key_in_base64>]    Key of your remote server.
-       
+
        [--plugin <name>]          Enable SIP003 plugin. (Experimental)
-       
+
        [--plugin-opts <options>]  Set SIP003 plugin options. (Experimental)
 
        [-v]                       Verbose mode.
 
 ## Transparent proxy
 
-The latest shadowsocks-libev has provided a *redir* mode. You can configure your Linux-based box or router to proxy all TCP traffic transparently, which is handy if you use a OpenWRT-powered router.
+The latest shadowsocks-libev has provided a *redir* mode. You can configure your Linux-based box or router to proxy all TCP traffic transparently, which is handy if you use an OpenWRT-powered router.
 
     # Create new chain
     iptables -t nat -N SHADOWSOCKS
@@ -492,28 +481,161 @@ The latest shadowsocks-libev has provided a *redir* mode. You can configure your
     # Start the shadowsocks-redir
     ss-redir -u -c /etc/config/shadowsocks.json -f /var/run/shadowsocks.pid
 
-## Shadowsocks over KCP
+## Transparent proxy (pure tproxy)
 
-It's quite easy to use shadowsocks and [KCP](https://github.com/skywind3000/kcp) together with [kcptun](https://github.com/xtaci/kcptun).
+Executing this script on the linux host can proxy all outgoing traffic of this machine (except the traffic sent to the reserved address). Other hosts under the same LAN can also change their default gateway to the ip of this linux host (at the same time change the dns server to 1.1.1.1 or 8.8.8.8, etc.) to proxy their outgoing traffic.
 
-The goal of shadowsocks over KCP is to provide a fully configurable, UDP based protocol to improve poor connections, e.g. a high packet loss 3G network.
+> Of course, the ipv6 proxy is similar, just change `iptables` to `ip6tables`, `ip` to `ip -6`, `127.0.0.1` to `::1`, and other details.
 
-### Setup your server
+```shell
+#!/bin/bash
 
-```bash
-server_linux_amd64 -l :21 -t 127.0.0.1:443 --crypt none --mtu 1200 --nocomp --mode normal --dscp 46 &
-ss-server -s 0.0.0.0 -p 443 -k passwd -m chacha20 -u
-```
+start_ssredir() {
+    # please modify MyIP, MyPort, etc.
+    (ss-redir -s MyIP -p MyPort -m MyMethod -k MyPasswd -b 127.0.0.1 -l 60080 --no-delay -u -T -v </dev/null &>>/var/log/ss-redir.log &)
+}
 
-### Setup your client
+stop_ssredir() {
+    kill -9 $(pidof ss-redir) &>/dev/null
+}
 
-```bash
-client_linux_amd64 -l 127.0.0.1:1090 -r <server_ip>:21 --crypt none --mtu 1200 --nocomp --mode normal --dscp 46 &
-ss-local -s 127.0.0.1 -p 1090 -k passwd -m chacha20 -l 1080 -b 0.0.0.0 &
-ss-local -s <server_ip> -p 443 -k passwd -m chacha20 -l 1080 -U -b 0.0.0.0
+start_iptables() {
+    ##################### SSREDIR #####################
+    iptables -t mangle -N SSREDIR
+
+    # connection-mark -> packet-mark
+    iptables -t mangle -A SSREDIR -j CONNMARK --restore-mark
+    iptables -t mangle -A SSREDIR -m mark --mark 0x2333 -j RETURN
+
+    # please modify MyIP, MyPort, etc.
+    # ignore traffic sent to ss-server
+    iptables -t mangle -A SSREDIR -p tcp -d MyIP --dport MyPort -j RETURN
+    iptables -t mangle -A SSREDIR -p udp -d MyIP --dport MyPort -j RETURN
+
+    # ignore traffic sent to reserved addresses
+    iptables -t mangle -A SSREDIR -d 0.0.0.0/8          -j RETURN
+    iptables -t mangle -A SSREDIR -d 10.0.0.0/8         -j RETURN
+    iptables -t mangle -A SSREDIR -d 100.64.0.0/10      -j RETURN
+    iptables -t mangle -A SSREDIR -d 127.0.0.0/8        -j RETURN
+    iptables -t mangle -A SSREDIR -d 169.254.0.0/16     -j RETURN
+    iptables -t mangle -A SSREDIR -d 172.16.0.0/12      -j RETURN
+    iptables -t mangle -A SSREDIR -d 192.0.0.0/24       -j RETURN
+    iptables -t mangle -A SSREDIR -d 192.0.2.0/24       -j RETURN
+    iptables -t mangle -A SSREDIR -d 192.88.99.0/24     -j RETURN
+    iptables -t mangle -A SSREDIR -d 192.168.0.0/16     -j RETURN
+    iptables -t mangle -A SSREDIR -d 198.18.0.0/15      -j RETURN
+    iptables -t mangle -A SSREDIR -d 198.51.100.0/24    -j RETURN
+    iptables -t mangle -A SSREDIR -d 203.0.113.0/24     -j RETURN
+    iptables -t mangle -A SSREDIR -d 224.0.0.0/4        -j RETURN
+    iptables -t mangle -A SSREDIR -d 240.0.0.0/4        -j RETURN
+    iptables -t mangle -A SSREDIR -d 255.255.255.255/32 -j RETURN
+
+    # mark the first packet of the connection
+    iptables -t mangle -A SSREDIR -p tcp --syn                      -j MARK --set-mark 0x2333
+    iptables -t mangle -A SSREDIR -p udp -m conntrack --ctstate NEW -j MARK --set-mark 0x2333
+
+    # packet-mark -> connection-mark
+    iptables -t mangle -A SSREDIR -j CONNMARK --save-mark
+
+    ##################### OUTPUT #####################
+    # proxy the outgoing traffic from this machine
+    iptables -t mangle -A OUTPUT -p tcp -m addrtype --src-type LOCAL ! --dst-type LOCAL -j SSREDIR
+    iptables -t mangle -A OUTPUT -p udp -m addrtype --src-type LOCAL ! --dst-type LOCAL -j SSREDIR
+
+    ##################### PREROUTING #####################
+    # proxy traffic passing through this machine (other->other)
+    iptables -t mangle -A PREROUTING -p tcp -m addrtype ! --src-type LOCAL ! --dst-type LOCAL -j SSREDIR
+    iptables -t mangle -A PREROUTING -p udp -m addrtype ! --src-type LOCAL ! --dst-type LOCAL -j SSREDIR
+
+    # hand over the marked package to TPROXY for processing
+    iptables -t mangle -A PREROUTING -p tcp -m mark --mark 0x2333 -j TPROXY --on-ip 127.0.0.1 --on-port 60080
+    iptables -t mangle -A PREROUTING -p udp -m mark --mark 0x2333 -j TPROXY --on-ip 127.0.0.1 --on-port 60080
+}
+
+stop_iptables() {
+    ##################### PREROUTING #####################
+    iptables -t mangle -D PREROUTING -p tcp -m mark --mark 0x2333 -j TPROXY --on-ip 127.0.0.1 --on-port 60080 &>/dev/null
+    iptables -t mangle -D PREROUTING -p udp -m mark --mark 0x2333 -j TPROXY --on-ip 127.0.0.1 --on-port 60080 &>/dev/null
+
+    iptables -t mangle -D PREROUTING -p tcp -m addrtype ! --src-type LOCAL ! --dst-type LOCAL -j SSREDIR &>/dev/null
+    iptables -t mangle -D PREROUTING -p udp -m addrtype ! --src-type LOCAL ! --dst-type LOCAL -j SSREDIR &>/dev/null
+
+    ##################### OUTPUT #####################
+    iptables -t mangle -D OUTPUT -p tcp -m addrtype --src-type LOCAL ! --dst-type LOCAL -j SSREDIR &>/dev/null
+    iptables -t mangle -D OUTPUT -p udp -m addrtype --src-type LOCAL ! --dst-type LOCAL -j SSREDIR &>/dev/null
+
+    ##################### SSREDIR #####################
+    iptables -t mangle -F SSREDIR &>/dev/null
+    iptables -t mangle -X SSREDIR &>/dev/null
+}
+
+start_iproute2() {
+    ip route add local default dev lo table 100
+    ip rule  add fwmark 0x2333        table 100
+}
+
+stop_iproute2() {
+    ip rule  del   table 100 &>/dev/null
+    ip route flush table 100 &>/dev/null
+}
+
+start_resolvconf() {
+    # or nameserver 8.8.8.8, etc.
+    echo "nameserver 1.1.1.1" >/etc/resolv.conf
+}
+
+stop_resolvconf() {
+    echo "nameserver 114.114.114.114" >/etc/resolv.conf
+}
+
+start() {
+    echo "start ..."
+    start_ssredir
+    start_iptables
+    start_iproute2
+    start_resolvconf
+    echo "start end"
+}
+
+stop() {
+    echo "stop ..."
+    stop_resolvconf
+    stop_iproute2
+    stop_iptables
+    stop_ssredir
+    echo "stop end"
+}
+
+restart() {
+    stop
+    sleep 1
+    start
+}
+
+main() {
+    if [ $# -eq 0 ]; then
+        echo "usage: $0 start|stop|restart ..."
+        return 1
+    fi
+
+    for funcname in "$@"; do
+        if [ "$(type -t $funcname)" != 'function' ]; then
+            echo "'$funcname' not a shell function"
+            return 1
+        fi
+    done
+
+    for funcname in "$@"; do
+        $funcname
+    done
+    return 0
+}
+main "$@"
 ```
 
 ## Security Tips
+
+For any public server, to avoid users accessing localhost of your server, please add `--acl acl/server_block_local.acl` to the command line.
 
 Although shadowsocks-libev can handle thousands of concurrent connections nicely, we still recommend
 setting up your server's firewall rules to limit connections from each user:
